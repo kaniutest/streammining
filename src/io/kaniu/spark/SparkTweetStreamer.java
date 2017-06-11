@@ -2,6 +2,7 @@ package io.kaniu.spark;
 
 
 import java.io.IOException;
+import java.io.InputStream;
 import java.io.Serializable;
 
 import java.util.Properties;
@@ -10,6 +11,7 @@ import java.util.concurrent.Future;
 import org.apache.kafka.clients.producer.KafkaProducer;
 import org.apache.kafka.clients.producer.ProducerRecord;
 import org.apache.kafka.clients.producer.RecordMetadata;
+import org.apache.log4j.Logger;
 import org.apache.spark.SparkConf;
 import org.apache.spark.api.java.JavaRDD;
 import org.apache.spark.api.java.function.Function;
@@ -38,12 +40,26 @@ import org.elasticsearch.spark.rdd.EsSpark ;
  * 
  * */
 public class SparkTweetStreamer implements Serializable{
+	static final Logger log = Logger.getLogger(SparkTweetStreamer.class);
 	
 	/**
 	 * 
 	 */
+	static private Properties kafkaprops = null;
+	static{
+		kafkaprops = new Properties();
+		InputStream producerprops = SparkTweetStreamer.class.getClassLoader().getResourceAsStream("kafkaproducer.properties");
+		try {
+			kafkaprops.load(producerprops);
+		} catch (IOException e) {
+			log.error(e);
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		}
+	}
 	private static final long serialVersionUID = 1L;
-	String APP_NAME = "twitterstreamer";
+	private static final String APP_NAME = "twitterstreamer";
+	private static final String KFK_OUT_TOPIC = "tweet-topic";
 	
 	@SuppressWarnings("unused")
 	private SparkTweetStreamer(){}
@@ -51,7 +67,7 @@ public class SparkTweetStreamer implements Serializable{
 	private int threads = 1;
 	private String kafkaouttopic = null;
 	
-	private Properties kafkaprops = null;
+	
 	
 	public SparkTweetStreamer(String arg1, int _threads, String _kafkaouttopic){
 		
@@ -76,7 +92,7 @@ public class SparkTweetStreamer implements Serializable{
                 if (status.getGeoLocation() != null) {
                     return true;
                 } else {
-                    return false;
+                    return true;
                 }
             }
         });
@@ -115,12 +131,12 @@ public class SparkTweetStreamer implements Serializable{
 				rdd.foreach(new VoidFunction<String>(){
 					
 					private static final long serialVersionUID = 1L;
-
+					final Properties kfk_props = kafkaprops;
 					@Override
 					public void call(String str) throws Exception {
 						System.out.println(str);
-						//writeToKafka(str.getBytes(), kfk_props);
-						
+						writeToKafka(str.getBytes(), kfk_props);
+						return;
 					}});
 				
 				return null;
@@ -137,8 +153,8 @@ public class SparkTweetStreamer implements Serializable{
 	
 	
 	private void writeToKafka(byte[] message, Properties props){
-		KafkaProducer<String, byte[]> producer = new KafkaProducer<String, byte[]>(props);// retrieveCachedPooledKafkaProducer(props);//retrieveCachedKafkaProducer(props);
-		Future<RecordMetadata> response = producer.send(new ProducerRecord<String, byte[]>(props.getProperty("topic.id"), message));
+		KafkaProducer<String, byte[]> producer = new KafkaProducer<String, byte[]>(props);
+		Future<RecordMetadata> response = producer.send(new ProducerRecord<String, byte[]>(KFK_OUT_TOPIC, message));
 		producer.close();
 	}
 	
