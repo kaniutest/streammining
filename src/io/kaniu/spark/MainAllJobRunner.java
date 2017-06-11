@@ -1,0 +1,42 @@
+package io.kaniu.spark;
+
+import java.io.IOException;
+
+
+public class MainAllJobRunner {
+	
+	
+	public static void main(String[] args) throws IOException {
+
+		if(args.length < 2){
+			System.err.println("Specify an application name in arguments: Expected any of these: "
+					+ "TWEETSTREAM, SENTIMENT_PROC");
+			System.exit(1);
+		}
+		
+		String APP_NAME = args[0];
+		
+		switch(APP_NAME){
+		case("TWEETSTREAM"):
+			if (args.length < 3) {
+				System.err.println("Usage: "+APP_NAME+" <topics> <numThreads> <outputTopic>");
+				new SparkTweetStreamer( args[0], 3, args[2] ).run();
+				System.exit(1);
+			}
+			return;
+		case("SENTIMENT_PROC"): 
+			return;
+		default: {
+			System.err.println("application name not recognized! Expected: "
+				+ "TWEETSTREAM, SENTIMENT_PROC");
+			System.exit(1);
+			return;
+		}
+		}//switch
+			
+		
+
+		
+	}
+
+}
