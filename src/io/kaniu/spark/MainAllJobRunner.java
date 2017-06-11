@@ -2,13 +2,16 @@ package io.kaniu.spark;
 
 import java.io.IOException;
 
-
+/**
+ * The main class for all spark jobs. 
+ * */
 public class MainAllJobRunner {
 	
 	
 	public static void main(String[] args) throws IOException {
+		
 
-		if(args.length < 2){
+		if(args.length < 1){
 			System.err.println("Specify an application name in arguments: Expected any of these: "
 					+ "TWEETSTREAM, SENTIMENT_PROC");
 			System.exit(1);
@@ -20,9 +23,9 @@ public class MainAllJobRunner {
 		case("TWEETSTREAM"):
 			if (args.length < 3) {
 				System.err.println("Usage: "+APP_NAME+" <topics> <numThreads> <outputTopic>");
-				new SparkTweetStreamer( args[0], 3, args[2] ).run();
 				System.exit(1);
 			}
+			new SparkTweetStreamer( args[1], 3, args[2] ).run();
 			return;
 		case("SENTIMENT_PROC"): 
 			return;
