@@ -23,17 +23,11 @@ import org.apache.spark.streaming.api.java.JavaDStream;
 import org.apache.spark.streaming.api.java.JavaReceiverInputDStream;
 import org.apache.spark.streaming.api.java.JavaStreamingContext;
 import org.apache.spark.streaming.twitter.TwitterUtils;
-import org.codehaus.jackson.JsonGenerationException;
-import org.codehaus.jackson.map.JsonMappingException;
 import org.codehaus.jackson.map.ObjectMapper;
 
-import kafka.serializer.DefaultDecoder;
-import kafka.serializer.StringDecoder;
-import scala.Tuple2;
-import scala.None;
 import twitter4j.Status;
 
-import org.elasticsearch.spark.rdd.EsSpark ;
+
 
 /**
  * This class reads from twitter feed and writes to kafka topic.
@@ -52,20 +46,18 @@ public class SparkTweetStreamer implements Serializable{
 		try {
 			kafkaprops.load(producerprops);
 		} catch (IOException e) {
-			log.error(e);
-			// TODO Auto-generated catch block
+			log.error(e,e);
 			e.printStackTrace();
 		}
 	}
 	private static final long serialVersionUID = 1L;
 	private static final String APP_NAME = "twitterstreamer";
-	private static final String KFK_OUT_TOPIC = "tweet-topic";
 	
 	@SuppressWarnings("unused")
 	private SparkTweetStreamer(){}
 	
 	private int threads = 1;
-	private String kafkaouttopic = "tweet-topic";
+	private String kafkaouttopic = null;
 	
 	
 	
@@ -75,7 +67,9 @@ public class SparkTweetStreamer implements Serializable{
 		kafkaouttopic = _kafkaouttopic;
 	}
 
-
+	/**
+	 * Filters out message without Geolocation then writes to kafka topic for better loadbalancing downstream. 
+	 * */
 	public void run() {
 		
 		SparkConf sparkConf = new SparkConf().setAppName(APP_NAME).set("spark.driver.allowMultipleContexts","true");
@@ -106,16 +100,9 @@ public class SparkTweetStreamer implements Serializable{
 	    	  String ret = "";
 	    	  try {
 	    		  ret = mapper.writeValueAsString(s);
-			} catch (JsonGenerationException e) {
-				// TODO Auto-generated catch block
-				e.printStackTrace();
-			} catch (JsonMappingException e) {
-				// TODO Auto-generated catch block
-				e.printStackTrace();
-			} catch (IOException e) {
-				// TODO Auto-generated catch block
-				e.printStackTrace();
-			}
+			} catch (Exception e) {
+				log.error(e,e);
+			} 
 	    	  return ret;
 
 	      }
@@ -152,12 +139,17 @@ public class SparkTweetStreamer implements Serializable{
 	}
 	
 	
+	/**
+	 * Kafka producer function. 
+	 * 
+	 * @param message
+	 * @param props
+	 */
 	private void writeToKafka(byte[] message, Properties props){
 		KafkaProducer<String, byte[]> producer = new KafkaProducer<String, byte[]>(props);
-		Future<RecordMetadata> response = producer.send(new ProducerRecord<String, byte[]>(KFK_OUT_TOPIC, message));
+		Future<RecordMetadata> response = producer.send(new ProducerRecord<String, byte[]>(kafkaouttopic, message));
 		producer.close();
 	}
-	
 	
 	
 	
