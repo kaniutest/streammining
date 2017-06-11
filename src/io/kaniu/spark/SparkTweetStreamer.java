@@ -65,7 +65,7 @@ public class SparkTweetStreamer implements Serializable{
 	private SparkTweetStreamer(){}
 	
 	private int threads = 1;
-	private String kafkaouttopic = null;
+	private String kafkaouttopic = "tweet-topic";
 	
 	
 	
@@ -129,9 +129,9 @@ public class SparkTweetStreamer implements Serializable{
 			public Void call(JavaRDD<String> rdd, Time arg1) throws Exception {
 				
 				rdd.foreach(new VoidFunction<String>(){
-					
-					private static final long serialVersionUID = 1L;
 					final Properties kfk_props = kafkaprops;
+					private static final long serialVersionUID = 1L;
+
 					@Override
 					public void call(String str) throws Exception {
 						System.out.println(str);

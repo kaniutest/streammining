@@ -25,9 +25,10 @@ public class MainAllJobRunner {
 				System.err.println("Usage: "+APP_NAME+" <topics> <numThreads> <outputTopic>");
 				System.exit(1);
 			}
-			new SparkTweetStreamer( args[1], 3, args[2] ).run();
+			new SparkTweetStreamer( args[1], 3, "tweet-topic" ).run();
 			return;
 		case("SENTIMENT_PROC"): 
+			new SparkSentimentalAnalysis(  "processed-topic",3 ).run();
 			return;
 		default: {
 			System.err.println("application name not recognized! Expected: "
