@@ -86,7 +86,7 @@ public class SparkTweetStreamer implements Serializable{
                 if (status.getGeoLocation() != null) {
                     return true;
                 } else {
-                    return true;
+                    return false;
                 }
             }
         });
