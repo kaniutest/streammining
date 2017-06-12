@@ -53,7 +53,7 @@ public class NLPWorker {
 		    }
 	}
 	
-	public static synchronized String sentiment(String text){
+	public static synchronized int sentiment(String text){
 
         
 		int mainSentiment = 0;
@@ -72,11 +72,10 @@ public class NLPWorker {
         }
     }
     if (mainSentiment == 2 || mainSentiment > 4 || mainSentiment < 0) {
-        return null;
+        return -1;
     }
     
-    return new StringBuilder().append("[").append("line="+text).append(",").append("cssClass="+mainSentiment).append("]").toString();
-
+      return mainSentiment;
 	}
 
 }
