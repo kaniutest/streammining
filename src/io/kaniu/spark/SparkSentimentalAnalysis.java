@@ -138,13 +138,24 @@ public class SparkSentimentalAnalysis implements Serializable{
 			private ObjectNode filterAttributes(ObjectNode _json) {
 				ObjectNode json = JsonNodeFactory.instance.objectNode();
 				json.put("text",_json.get("text"));
-				json.put("geoLocation",_json.get("geoLocation"));
+				
+				ObjectNode location = JsonNodeFactory.instance.objectNode();
+				location.put("lat", _json.get("geoLocation").get("latitude"));
+				location.put("lon", _json.get("geoLocation").get("longitude"));
+				
+				json.put("location",location);
+				
+				ObjectNode place = JsonNodeFactory.instance.objectNode();
+				place.put("geometryCoordinates",_json.get("place").get("geometryCoordinates"));
+				place.put("geometryType",_json.get("place").get("geometryType"));
+				
+				json.put("place",place);
 				json.put("createdAt",_json.get("createdAt"));
 				return json;
 			}});
 		
 		//lines.print();
-		JavaEsSparkStreaming.saveJsonToEs(lines, "mine_index/tweet");
+		JavaEsSparkStreaming.saveJsonToEs(lines, "mining_index/tweet");
 		//EsSparkStreaming.saveJsonToEs(lines.dstream(), "spark/docs");
 		
 		

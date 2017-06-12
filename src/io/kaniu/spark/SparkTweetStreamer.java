@@ -83,7 +83,7 @@ public class SparkTweetStreamer implements Serializable{
 	    
 	    JavaDStream<Status> filteredtwt =  tweets.filter(  new Function<Status, Boolean>() {
             public Boolean call(Status status){
-                if (status.getGeoLocation() != null) {
+                if ((status.getPlace() != null && status.getPlace().getGeometryCoordinates()!= null) || status.getGeoLocation() != null) {
                     return true;
                 } else {
                     return false;
