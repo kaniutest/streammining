@@ -45,7 +45,7 @@ public class MainAllJobRunner {
 			new SparkSentimentalAnalysis(  topic, threads  ).run();
 			return;
 		default: {
-			System.err.println("application name not recognized! Expected: "
+			System.err.println("application name '"+APP_NAME+"' not recognized! Expected: "
 				+ "TWEETSTREAM, SENTIMENT_PROC");
 			System.exit(1);
 			return;
