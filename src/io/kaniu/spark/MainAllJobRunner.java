@@ -28,7 +28,7 @@ public class MainAllJobRunner {
 		Integer threads = null;
 		try{
 			topic = args[1];
-			Integer.parseInt(args[2]);
+			threads = Integer.parseInt(args[2]);
 		}catch (Throwable e){
 			
 			System.err.println(e.getMessage()+"       Usage: "+APP_NAME+" <topics> <numThreads>");
