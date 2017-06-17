@@ -118,7 +118,7 @@
 					<target>1.7</target>
 				</configuration>
 			</plugin>
-
+			<!--  
 			<plugin>
 				<artifactId>maven-shade-plugin</artifactId>
 				<version>2.4.1</version>
@@ -160,6 +160,7 @@
 					</execution>
 				</executions>
 			</plugin>
+			-->
 			<!-- Make this jar executable -->
 			<plugin>
 				<groupId>org.apache.maven.plugins</groupId>
@@ -171,7 +172,7 @@
 					<archive>
 						<manifest>
 							<addClasspath>true</addClasspath>
-							<!-- <mainClass>com.neustar.kafka.examples.SparkConsumer</mainClass> -->
+							<mainClass>io.kaniu.spark.MainAllJobRunner</mainClass>
 							<classpathPrefix>dependency-jars/</classpathPrefix>
 						</manifest>
 					</archive>
@@ -199,6 +200,7 @@
 				</executions>
 			</plugin>
 
+			<!--  
 			<plugin>
 				<groupId>org.apache.maven.plugins</groupId>
 				<artifactId>maven-assembly-plugin</artifactId>
@@ -219,6 +221,7 @@
 					</execution>
 				</executions>
 			</plugin>
+			-->
 
 		</plugins>
 
