@@ -19,16 +19,30 @@ public class MainAllJobRunner {
 		
 		String APP_NAME = args[0];
 		
+		if (args.length < 3) {
+			System.err.println("Usage: "+APP_NAME+" <topics> <numThreads>");
+			System.exit(1);
+		}
+		
+		String topic = null;
+		Integer threads = null;
+		try{
+			topic = args[1];
+			Integer.parseInt(args[2]);
+		}catch (Throwable e){
+			
+			System.err.println(e.getMessage()+"       Usage: "+APP_NAME+" <topics> <numThreads>");
+			System.exit(1);
+		}
+		
 		switch(APP_NAME){
 		case("TWEETSTREAM"):
-			if (args.length < 3) {
-				System.err.println("Usage: "+APP_NAME+" <topics> <numThreads> <outputTopic>");
-				System.exit(1);
-			}
-			new SparkTweetStreamer( args[1], 1, "tweet-topic" ).run();
+
+			new SparkTweetStreamer( topic, threads ).run();
 			return;
 		case("SENTIMENT_PROC"): 
-			new SparkSentimentalAnalysis(  "tweet-topic",1 ).run();
+			
+			new SparkSentimentalAnalysis(  topic, threads  ).run();
 			return;
 		default: {
 			System.err.println("application name not recognized! Expected: "

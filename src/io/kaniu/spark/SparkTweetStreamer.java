@@ -61,7 +61,7 @@ public class SparkTweetStreamer implements Serializable{
 	
 	
 	
-	public SparkTweetStreamer(String arg1, int _threads, String _kafkaouttopic){
+	public SparkTweetStreamer(  String _kafkaouttopic, int _threads){
 		
 		threads = _threads;
 		kafkaouttopic = _kafkaouttopic;
